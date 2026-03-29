@@ -77,27 +77,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               builder: (context, child) {
                 return Transform.translate(
                   offset: Offset(0, _dropAnimation.value),
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 30,
-                          offset: const Offset(0, 15),
-                        )
-                      ]
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        height: 90,
-                        width: 90,
-                        fit: BoxFit.cover,
-                      ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      height: 120,
+                      width: 120,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 );

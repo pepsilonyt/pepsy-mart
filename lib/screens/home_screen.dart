@@ -11,6 +11,7 @@ import 'cart_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
 import 'category_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -84,7 +85,9 @@ class HomeScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.logout, color: AppTheme.offerRed),
             title: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.offerRed)),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (route) => false);
+            },
           ),
         ],
       ),
