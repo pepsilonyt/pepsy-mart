@@ -186,11 +186,20 @@ class HomeScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Delivery in 8 minutes',
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black87),
+                          Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset('assets/images/logo.png', height: 28, width: 28, fit: BoxFit.cover),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Delivery in 8 minutes',
+                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black87),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           BouncyScale(
                             onTap: () => _showAddressModal(context),
                             child: Row(

@@ -90,10 +90,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         )
                       ]
                     ),
-                    child: const Icon(
-                      Icons.shopping_basket_rounded,
-                      size: 80,
-                      color: AppTheme.accentGreen,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 90,
+                        width: 90,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 );
