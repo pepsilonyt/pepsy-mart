@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/staggered_fade.dart';
 import 'home_screen.dart';
+import 'admin/admin_dashboard_screen.dart'; // Admin Module Import
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,7 +15,21 @@ class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
 
   void _login() {
-    // Navigate straight to Home for mock purposes
+    final phone = _phoneController.text.trim();
+    
+    // 1. Magic Secure Admin Bypass Logic
+    if (phone == '9999999999') {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 600),
+          pageBuilder: (_, __, ___) => const AdminDashboardScreen(),
+          transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+        )
+      );
+      return;
+    }
+
+    // 2. Default Customer Routing Map
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 600),
