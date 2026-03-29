@@ -10,76 +10,45 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
-  late AnimationController _logoController;
+  late AnimationController _dropController;
+  late Animation<double> _dropAnimation;
+
   late AnimationController _textController;
-
-  late Animation<double> _logoScaleAnimation;
-  late Animation<double> _logoRotationAnimation;
-  late Animation<Offset> _logoSlideAnimation;
-
-  late Animation<Offset> _titleSlideAnimation;
-  late Animation<double> _titleFadeAnimation;
-  late Animation<Offset> _subtitleSlideAnimation;
-  late Animation<double> _subtitleFadeAnimation;
+  late Animation<Offset> _slideLeftAnimation;
+  late Animation<Offset> _slideRightAnimation;
 
   @override
   void initState() {
     super.initState();
+    // 1. Instant Drop (Speed over complexity)
+    _dropController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _dropAnimation = Tween<double>(begin: -200, end: 0).animate(CurvedAnimation(parent: _dropController, curve: Curves.bounceOut));
 
-    // Slower, dramatic engine for heavy debug modes that compile shaders late
-    _logoController = AnimationController(vsync: this, duration: const Duration(milliseconds: 2000));
+    // 2. Fast Text Slide
+    _textController = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
     
-    _logoSlideAnimation = Tween<Offset>(begin: const Offset(0, -3.0), end: Offset.zero).animate(
-      CurvedAnimation(parent: _logoController, curve: const Interval(0.0, 0.7, curve: Curves.bounceOut)),
-    );
-    _logoScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: const Interval(0.0, 0.7, curve: Curves.elasticOut)),
-    );
-    _logoRotationAnimation = Tween<double>(begin: -0.5, end: 0.0).animate(
-      CurvedAnimation(parent: _logoController, curve: const Interval(0.0, 0.7, curve: Curves.elasticOut)),
-    );
+    _slideLeftAnimation = Tween<Offset>(begin: const Offset(-2, 0), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic));
+    _slideRightAnimation = Tween<Offset>(begin: const Offset(2, 0), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic));
 
-    // Text slides in slowly from sides
-    _textController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
-
-    _titleSlideAnimation = Tween<Offset>(begin: const Offset(-1.5, 0.0), end: Offset.zero).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic)),
-    );
-    _titleFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0.0, 0.5, curve: Curves.easeIn)),
-    );
-
-    _subtitleSlideAnimation = Tween<Offset>(begin: const Offset(1.5, 0.0), end: Offset.zero).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic)),
-    );
-    _subtitleFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0.2, 0.7, curve: Curves.easeIn)),
-    );
-
-    // Sequence Execution
-    _playAnimationsSequence();
+    _startCinematicSequence();
   }
 
-  void _playAnimationsSequence() async {
-    // Crucial: Wait 1.5 seconds FIRST. This gives the Flutter Desktop/Emulator engine time to finish its 'jank' compilation
-    // so the user actually SEES the beginning of the animation unfold perfectly.
-    await Future.delayed(const Duration(milliseconds: 1500));
+  void _startCinematicSequence() async {
+    // Ultra-fast booting sequence
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (mounted) _dropController.forward();
     
-    if (mounted) _logoController.forward();
-    
-    // Wait for the logo to hit the ground
-    await Future.delayed(const Duration(milliseconds: 1400));
-    
-    // Slide titles in
+    await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) _textController.forward();
 
-    // Hold the complete composition for 3 full seconds for the client to read
-    await Future.delayed(const Duration(milliseconds: 3000));
-    
+    // Route to login much faster
+    await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 1000), // Very slow smooth fade to login
+          transitionDuration: const Duration(milliseconds: 400),
           pageBuilder: (_, __, ___) => const LoginScreen(),
           transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
         )
@@ -89,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   @override
   void dispose() {
-    _logoController.dispose();
+    _dropController.dispose();
     _textController.dispose();
     super.dispose();
   }
@@ -97,83 +66,72 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: AppTheme.accentGreen, // Zepto full green boot
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SlideTransition(
-              position: _logoSlideAnimation,
-              child: ScaleTransition(
-                scale: _logoScaleAnimation,
-                child: RotationTransition(
-                  turns: _logoRotationAnimation,
+            // Floating Drop Animation
+            AnimatedBuilder(
+              animation: _dropAnimation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, _dropAnimation.value),
                   child: Container(
-                    height: 160,
-                    width: 160,
-                    decoration: const BoxDecoration(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(32),
                       boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 40, offset: Offset(0, 20)),
-                        BoxShadow(color: Colors.black12, blurRadius: 15, offset: Offset(0, 5)),
-                      ],
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 30,
+                          offset: const Offset(0, 15),
+                        )
+                      ]
                     ),
-                    child: Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: const [
-                          Icon(Icons.shopping_basket_rounded, size: 90, color: AppTheme.accentGreen),
-                          Positioned(
-                            top: 35,
-                            right: 25,
-                            child: Icon(Icons.flash_on, size: 35, color: AppTheme.primaryColor),
-                          ),
-                        ],
-                      ),
+                    child: const Icon(
+                      Icons.shopping_basket_rounded,
+                      size: 80,
+                      color: AppTheme.accentGreen,
                     ),
                   ),
-                ),
-              ),
+                );
+              }
             ),
-            const SizedBox(height: 48),
-            SlideTransition(
-              position: _titleSlideAnimation,
-              child: FadeTransition(
-                opacity: _titleFadeAnimation,
-                child: const Text(
-                  'Pepsy Mart',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black87,
-                    letterSpacing: -1.5,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SlideTransition(
-              position: _subtitleSlideAnimation,
-              child: FadeTransition(
-                opacity: _subtitleFadeAnimation,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentGreen,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+            
+            const SizedBox(height: 32),
+
+            // Staggered Text Reveal
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SlideTransition(
+                  position: _slideLeftAnimation,
                   child: const Text(
-                    'India\'s last minute app',
+                    'Pepsy',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 48,
+                      fontWeight: FontWeight.w900,
                       color: Colors.white,
-                      letterSpacing: 0.5,
+                      letterSpacing: -1.5,
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                SlideTransition(
+                  position: _slideRightAnimation,
+                  child: const Text(
+                    'Mart',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white, // White text on green bg
+                      letterSpacing: -1.5,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

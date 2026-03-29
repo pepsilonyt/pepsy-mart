@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Vibrant Blinkit Yellow
-  static const Color primaryColor = Color(0xFFF8CB46); 
-  // Deep Action Green for Buttons/Prices
-  static const Color accentGreen = Color(0xFF0C831F);
-  static const Color offerRed = Color(0xFFE53935);
-  
-  static const Color backgroundColor = Color(0xFFF4F6F9); 
+  static const Color primaryColor = Colors.white; // Eliminated Yellow
+  static const Color backgroundColor = Color(0xFFF3F4F6); // Clean slate bg
+  static const Color accentGreen = Color(0xFF0C831F); // Core action color
+  static const Color textDark = Color(0xFF1E293B); // High-contrast text
+  static const Color textLight = Color(0xFF64748B); // Readable gray
+  static const Color offerRed = Color(0xFFE11D48); // High conversion CTA red
   static const Color surfaceColor = Colors.white;
-  static const Color textDark = Color(0xFF1C1C1C);
-  static const Color textLight = Color(0xFF757575);
 
   static ThemeData get lightTheme {
     return ThemeData(

@@ -2,15 +2,39 @@ import 'package:flutter/material.dart';
 import '../../theme.dart';
 import 'manage_orders_screen.dart';
 import 'manage_inventory_screen.dart';
+import 'manage_products_screen.dart';
 import '../login_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 
+  Widget _buildAdminDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFF1E293B),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          const UserAccountsDrawerHeader(
+            decoration: BoxDecoration(color: Color(0xFF0F172A)),
+            accountName: Text('Store Admin', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            accountEmail: Text('Manager Role', style: TextStyle(color: Colors.white70)),
+            currentAccountPicture: CircleAvatar(backgroundColor: AppTheme.accentGreen, child: Icon(Icons.shield, color: Colors.white)),
+          ),
+          ListTile(leading: const Icon(Icons.dashboard, color: Colors.white), title: const Text('Dashboard', style: TextStyle(color: Colors.white)), onTap: () => Navigator.pop(context)),
+          ListTile(leading: const Icon(Icons.add_box, color: Colors.white), title: const Text('Add Product', style: TextStyle(color: Colors.white)), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageProductsScreen())); }),
+          ListTile(leading: const Icon(Icons.inventory_2, color: Colors.white), title: const Text('Inventory', style: TextStyle(color: Colors.white)), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageInventoryScreen())); }),
+          ListTile(leading: const Icon(Icons.list_alt, color: Colors.white), title: const Text('Live Orders', style: TextStyle(color: Colors.white)), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageOrdersScreen())); }),
+          ListTile(leading: const Icon(Icons.people, color: Colors.white), title: const Text('Customers', style: TextStyle(color: Colors.white)), onTap: () {}),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6), // Slightly darker background for Admin
+      drawer: _buildAdminDrawer(context),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E293B), // Dark Slate AppBar
         title: const Text('Admin Dashboard', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),

@@ -10,6 +10,7 @@ import 'product_details_screen.dart';
 import 'cart_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
+import 'category_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _buildYellowSliverAppBar(context, ref),
+          _buildHeaderAppBar(context, ref),
           _buildQuickActionBanner(context),
           _buildDenseCategories(),
           _buildProductShelf(context, ref, 'Bestsellers', mockBestsellers, 400),
@@ -30,6 +31,7 @@ class HomeScreen extends ConsumerWidget {
           const SliverPadding(padding: EdgeInsets.only(bottom: 60)),
         ],
       ),
+      bottomNavigationBar: _buildStickyCartPreview(context, ref),
     );
   }
 
@@ -152,14 +154,14 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildYellowSliverAppBar(BuildContext context, WidgetRef ref) {
+  Widget _buildHeaderAppBar(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
     final cartCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
 
     return SliverAppBar(
       pinned: true,
       floating: false,
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       collapsedHeight: 80,
       expandedHeight: 140,
@@ -353,7 +355,9 @@ class HomeScreen extends ConsumerWidget {
               delay: 200 + (index * 40), // Cascading popup effect for categories
               slideOffset: 40,
               child: BouncyScale(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryScreen(category: cat)));
+                },
                 child: Column(
                   children: [
                     Expanded(
@@ -538,6 +542,47 @@ class HomeScreen extends ConsumerWidget {
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildStickyCartPreview(BuildContext context, WidgetRef ref) {
+    final cartItems = ref.watch(cartProvider);
+    if (cartItems.isEmpty) return null;
+
+    final cartCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+    final cartTotal = cartItems.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
+
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
+        child: BouncyScale(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen())),
+          child: Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(color: AppTheme.accentGreen, borderRadius: BorderRadius.circular(16)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 20),
+                    const SizedBox(width: 8),
+                    Text('$cartCount item${cartCount > 1 ? 's' : ''}  |  \$${cartTotal.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const Row(
+                  children: [
+                    Text('View Cart', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Icon(Icons.arrow_right, color: Colors.white),
+                  ],
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );

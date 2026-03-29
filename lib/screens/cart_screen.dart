@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../theme.dart';
 import '../providers/cart_provider.dart';
+import 'checkout_screen.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -45,11 +46,11 @@ class CartScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(Icons.timer, color: AppTheme.accentGreen, size: 20),
-                                const SizedBox(width: 8),
-                                const Text('Delivery in 8 mins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                Icon(Icons.timer, color: AppTheme.accentGreen, size: 20),
+                                SizedBox(width: 8),
+                                Text('Delivery in 8 mins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               ],
                             ),
                             const Divider(height: 32),
@@ -118,43 +119,39 @@ class CartScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                // Fixed Bottom Payment Bar
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text('PAY USING', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textLight)),
-                          const SizedBox(height: 4),
-                          Row(children: const [Icon(Icons.money, size: 16, color: AppTheme.textDark), SizedBox(width: 4), Text('Cash on Delivery', style: TextStyle(fontWeight: FontWeight.bold))]),
-                        ],
-                      ),
-                      const SizedBox(width: 24),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Fixed Bottom Payment Bar (CRO Optimized)
+                SafeArea(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                    decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CheckoutScreen()));
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [Text('\$${totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)), const Text('TOTAL', style: TextStyle(fontSize: 10, color: Colors.white70))],
-                                ),
-                                const Row(children: [Text('Place Order ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)), Icon(Icons.arrow_forward_ios, size: 14)]),
+                                Text('\$${totalPrice.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                const Text('TOTAL', style: TextStyle(fontSize: 10, color: Colors.white70))
                               ],
                             ),
-                          ),
+                            const Row(
+                              children: [
+                                Text('Proceed to Checkout ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                Icon(Icons.arrow_forward_ios, color: Colors.white, size: 14)
+                              ]
+                            ),
+                          ],
                         ),
-                      )
-                    ],
+                      ),
+                    ),
                   ),
                 )
               ],
